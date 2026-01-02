@@ -7,6 +7,7 @@ An individual posted an "update" which contained malware
 
 ![Glazed Client](https://raw.githubusercontent.com/luxury02/blog/main/images/image.png)
 
+The tools used: https://www.jetbrains.com/idea/ | https://github.com/Col-E/Recaf/releases/tag/4.0.0-alpha
 ### The Decompilation
 
 ![Decompilation Overview](https://imgur.com/yWmAw9Q.png)
@@ -32,11 +33,11 @@ This class seems to contain a helper function that decrypts strings
 
 And we did find a use case for `StagingHelper` in the `MEntrypoint` class!
 
-To actually get the contents of the strings, we need to run the code, so I opened a java IDE
+This class is responsible for decrypting strings used by the malware. To view the actual values, I had to run the code in a Java IDE, which allowed me to extract the decrypted strings.
 
 ![Java IDE Setup](https://media.discordapp.net/attachments/1408120554715615292/1456703356843200603/image.png?ex=69595438&is=695802b8&hm=ac126b0c5eb1c2a33653703207fac2da58dce60a53db07236beef0efd9f76282&=&format=webp&quality=lossless)
 
-I’ve loaded the important classes to get the strings
+I’ve loaded the important classes to get the strings, I just put everything that was calling the string decryption part
 
 ![Class Files](https://media.discordapp.net/attachments/1408120554715615292/1456703581251047671/image.png?ex=6959546e&is=695802ee&hm=026312aaab60456fc1a9686fb591d4fa87362e8a4e08994d6fd3bab3a0f40b20&=&format=webp&quality=lossless)
 
@@ -50,7 +51,8 @@ A 7.4 MB `.jar` file called "Module"
 
 ![Module JAR](https://media.discordapp.net/attachments/1408120554715615292/1456704324234248366/image.png?ex=6959551f&is=6958039f&hm=1dc2ec02d33fdbac3e9fa7599564235a618f449b8b254d6f1c9e098b23cdbb73&=&format=webp&quality=lossless)
 
-Looking at the folder structure, we can see **/dev/jnic**, and JNIC is a popular tool for making decompilation harder by adding junk code, bloat, and relying on *natives* (DLLs).
+Looking at the folder structure, we notice /dev/jnic (https://jnic.dev/
+), which points to JNIC, a tool commonly used to complicate decompilation. It does this by adding unnecessary code, bloating the program, and leveraging native libraries like DLLs. Obfuscation, in general, is the practice of making code harder to understand. Tools like JNIC go a step further by using a technique called "transpilation," where Java applications rely on the Java Native Interface (JNI) to interact with native libraries, such as DLLs, making reverse engineering even more difficult.
 
 After examining the `Majanito` folder, we discover:
 
@@ -59,6 +61,8 @@ After examining the `Majanito` folder, we discover:
 This can help us understand what type of information the stealer collects.
 
 Upon further inspection, we see that 90% of this is “natived,” which is not a good sign.
+
+(By ‘natived,’ I mean the code has been converted into a binary format (like a DLL on Windows), which makes it harder for us to read or understand using traditional decompiling methods.)
 
 After looking at the `FileHelper.class`, here’s what it steals:
 
